@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>A Little Question 💗</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+font-family:Arial,sans-serif;background:linear-gradient(135deg,#ffe5ec,#fff7f9);overflow:hidden}
+.card{width:min(92%,410px);max-height:92vh;overflow:auto;padding:32px 23px;text-align:center;
+background:rgba(255,255,255,.96);border-radius:28px;box-shadow:0 12px 40px rgba(0,0,0,.12)}
+.heart{font-size:55px}.title{margin:5px 0 10px;font-size:27px;color:#333}
+p{color:#777;margin:0 0 22px}.buttons{position:relative;height:78px;display:flex;align-items:center;justify-content:center;gap:16px}
+button{border:0;border-radius:999px;padding:13px 25px;font-size:17px;font-weight:700;cursor:pointer}
+#yes{background:#ff6f91;color:white}#no{background:#eee;color:#555;position:relative}
+#answer,#done{display:none}
+h2{color:#ff4f78;margin:6px 0 8px}
+label{display:block;text-align:left;font-weight:700;color:#555;margin:12px 0 6px}
+input{width:100%;padding:13px;border:1px solid #ddd;border-radius:14px;font-size:16px;background:#fff}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 18px}
+.choice{padding:14px 8px;border:2px solid #eee;border-radius:16px;background:#fff;color:#555;font-size:15px}
+.choice.selected{border-color:#ff6f91;background:#fff0f4;color:#ff4f78}
+.send{background:#ff6f91;color:white;width:100%}.small{font-size:12px;color:#aaa;margin-top:12px}
+.summary{font-size:16px;line-height:1.6;color:#666}
+</style>
+</head>
+<body>
+<div class="card">
+<div class="heart">💗</div>
+<h1 class="title">Will you go on a date with me?</h1>
+<p>Choose carefully hehe 😆</p>
+
+<div class="buttons" id="area">
+<button id="yes">YES 💕</button>
+<button id="no">NO</button>
+</div>
+
+<div id="answer">
+<h2>Yay! 🥰</h2>
+<p>Now let's plan our date!</p>
+
+<label>📅 When would you like to go?</label>
+<input id="date" type="date">
+
+<label>📍 What kind of date do you want?</label>
+<div class="choices">
+<button class="choice" data-place="☕ Cafe">☕ Cafe</button>
+<button class="choice" data-place="🍗 Jollibee">🍗 Jollibee</button>
+<button class="choice" data-place="🛍️ Robinsons">🛍️ Robinsons</button>
+<button class="choice" data-place="🍜 Food trip">🍜 Food trip</button>
+<button class="choice" data-place="🎬 Movie">🎬 Movie</button>
+<button class="choice" data-place="🌳 Park / Walk">🌳 Park / Walk</button>
+<button class="choice" data-place="🎮 Arcade">🎮 Arcade</button>
+<button class="choice" data-place="✨ Surprise me">✨ Surprise me</button>
+</div>
+
+<button class="send" id="send">Send my answer 💌</button>
+<div class="small">Pick a date and one kind of date.</div>
+</div>
+
+<div id="done">
+<h2>Sent! 💌</h2>
+<div class="summary" id="summary"></div>
+<p>Thanks for choosing! 💗</p>
+</div>
+</div>
+
+<script>
+const no=document.getElementById("no"),area=document.getElementById("area");
+function moveNo(){
+ const r=area.getBoundingClientRect();
+ no.style.position="absolute";
+ no.style.left=Math.max(0,Math.random()*(r.width-no.offsetWidth))+"px";
+ no.style.top=Math.max(0,Math.random()*(r.height-no.offsetHeight))+"px";
+}
+no.addEventListener("mouseenter",moveNo);
+no.addEventListener("touchstart",e=>{e.preventDefault();moveNo()});
+no.addEventListener("click",moveNo);
+
+document.getElementById("yes").onclick=()=>{
+ area.style.display="none";
+ document.getElementById("answer").style.display="block";
+};
+
+let selected="";
+document.querySelectorAll(".choice").forEach(btn=>{
+ btn.onclick=()=>{
+  document.querySelectorAll(".choice").forEach(x=>x.classList.remove("selected"));
+  btn.classList.add("selected");
+  selected=btn.dataset.place;
+ };
+});
+
+document.getElementById("send").onclick=async()=>{
+ const date=document.getElementById("date").value;
+ if(!date){alert("Pumili muna ng date 💗");return}
+ if(!selected){alert("Pumili muna kung anong kind of date 💗");return}
+ const d=new Date(date+"T00:00:00");
+ const formatted=d.toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
+ const text="YES! 💗 I want to go on a date with you! 🥰\nDate: "+formatted+"\nKind of date: "+selected;
+ document.getElementById("summary").innerHTML="📅 <b>"+formatted+"</b><br>📍 <b>"+selected+"</b>";
+ if(navigator.share){
+  try{await navigator.share({title:"Our date 💗",text:text});
+   document.getElementById("answer").style.display="none";
+   document.getElementById("done").style.display="block";
+  }catch(e){}
+ }else{
+  try{await navigator.clipboard.writeText(text)}catch(e){}
+  alert("Answer copied! Paste it into Messenger or another chat. 💌");
+  document.getElementById("answer").style.display="none";
+  document.getElementById("done").style.display="block";
+ }
+};
+</script>
+</body>
+</html>
